@@ -1,0 +1,8 @@
+{
+    "Name": "Gulag",
+    "LoadPriority": 3,
+    "Version": "1.1.0",
+    "RequiredOnClient": false,
+    "ConVars": [],
+    "Scripts": []
+}
