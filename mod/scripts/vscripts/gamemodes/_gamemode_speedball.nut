@@ -311,6 +311,7 @@ void function WinGulag( entity winner ) {
 
 	if (file.gulagWaitPlayers.len() >= 2) {
 		entity p = file.gulagWaitPlayers[0]
+		if (GetOtherTeamArr(file.gulagWaitPlayers, p).len() == 0) return
 		entity p1 = GetOtherTeamArr(file.gulagWaitPlayers, p)[0]
 
 		printl("2 or more players waiting")
@@ -354,6 +355,7 @@ void function ResetRound() {
 
 array<entity> function GetOtherTeamArr(array<entity> arr, entity player) {
 	array<entity> newArr
+	if (!IsValid(player)) return []
 	foreach(entity e in arr) {
 		if (!IsValid(e)) continue
 		if (player.GetTeam() != e.GetTeam()) newArr.append(e)
