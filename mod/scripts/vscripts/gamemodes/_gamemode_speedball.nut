@@ -291,28 +291,20 @@ void function GiveRandomWeapon(entity player, entity other) {
 void function WinGulag( entity winner ) {
 	GiveLoadoutB( winner )
 
-	// Respawn at a random panel for no spawn camping
-	Point imc
-	imc.origin = < 679, 4674, 200>
-	imc.angles = < 0, -90, 0 >
-	Point mil
-	mil.origin = < -4, -4350, 144 >
-	mil.angles = < 0, 80, 0 >
+	file.gulagPlayers.clear()
 
-	if (winner.GetTeam() == TEAM_IMC) {
-		winner.SetOrigin(imc.origin)
-		winner.SetAngles(imc.angles)
-	} else if (winner.GetTeam() == TEAM_MILITIA) {
-		winner.SetOrigin(mil.origin)
-		winner.SetAngles(mil.angles)
-	}
+	entity p = SpawnPoints_GetPilotStart(winner.GetTeam())[0]
+	array<entity> otherTeam = GetOtherTeamArr( file.gulagWaitPlayers, winner )
+	array<entity> team = GetTeamArr( file.gulagWaitPlayers, winner )
+
+	winner.SetOrigin(p.GetOrigin())
+	winner.SetAngles(p.GetAngles())
 
 	printl("Gulag winner.")
 
-	if (file.gulagWaitPlayers.len() >= 2) {
-		entity p = file.gulagWaitPlayers[0]
-		if (GetOtherTeamArr(file.gulagWaitPlayers, p).len() == 0) return
-		entity p1 = GetOtherTeamArr(file.gulagWaitPlayers, p)[0]
+	if (team.len() != 0 && otherTeam.len() != 0) {
+		entity p = team[0]
+		entity p1 = otherTeam[0]
 
 		printl("2 or more players waiting")
 
@@ -363,13 +355,31 @@ array<entity> function GetOtherTeamArr(array<entity> arr, entity player) {
 	return newArr
 }
 
+array<entity> function GetTeamArr(array<entity> arr, entity player) {
+	array<entity> newArr
+	if (!IsValid(player)) return []
+	foreach(entity e in arr) {
+		if (!IsValid(e)) continue
+		if (player.GetTeam() == e.GetTeam()) newArr.append(e)
+	}
+	return newArr
+}
+
 void function InitPoints() {
 	Point point1
 	Point point2
-	point1.origin = <522, -3271.5, 2765.9>
-	point1.angles = <0, 90, 0>
-	point2.origin = <522, -1910, 2765.9>
-	point2.angles = <0, -90, 0> 
+	if (GetMapName() == "mp_drydock") {
+		point1.origin = <522, -3271.5, 2765.9>
+		point1.angles = <0, 90, 0>
+		point2.origin = <522, -1910, 2765.9>
+		point2.angles = <0, -90, 0> 
+	} else if (GetMapName() == "mp_forwardbase_kodai") {
+		point1.origin = <1573, 846, 3511.21>
+		point1.angles = <0, -90, 0>
+		point2.origin = <1573, -1910, 3511.21>
+		point2.angles = <0, 90, 0> 
+	}
+	
 
 	file.gulagSpawns = [point1, point2]
 }
